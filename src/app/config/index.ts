@@ -7,4 +7,6 @@ export default {
   database_url: process.env.DATABASE_URL,
   jwt_access_secret: process.env.JWT_SECRET_ACCESS,
   NODE_ENV: process.env.NODE_ENV,
+  secret: process.env.SECRET,
+  expire_in: process.env.EXPIRE_IN,
 };

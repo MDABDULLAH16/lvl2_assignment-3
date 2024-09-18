@@ -1,55 +1,41 @@
 import httpStatus from 'http-status';
-import config from '../../config';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import { AuthServices } from './auth.service';
+import AppError from '../errors/AppError';
+import { userServices } from '../modules/user/user.service';
+import catchAsync from '../utils/catchAsync';
+import { checkPassword } from '../helpers/passwordHelper';
+import { createToken } from './auth.utils';
+import config from '../config';
+import sendResponse from '../utils/sendResponse';
 
-const loginUser = catchAsync(async (req, res) => {
-  const result = await AuthServices.loginUser(req.body);
-  const { refreshToken, accessToken, needsPasswordChange } = result;
+export const loginUser = catchAsync(async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userInfo = await userServices.isUserExistIntoDB(email);
+  if (!userInfo) {
+    throw new AppError(httpStatus.NOT_FOUND, "user doesn't exist");
+  }
 
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.NODE_ENV === 'production',
-    httpOnly: true,
-  });
+  const isPasswordValid = checkPassword(password, userInfo.password);
+  if (!isPasswordValid) {
+    throw new AppError(httpStatus.FORBIDDEN, 'password does not match');
+  }
+  const tokenData = {
+    email: userInfo.email,
+    role: userInfo.role,
+  };
 
+  const token = createToken(
+    tokenData,
+    config.secret as string,
+    config.expire_in as string
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User is logged in succesfully!',
+    message: 'user login successfully',
     data: {
-      accessToken,
-      needsPasswordChange,
+      token,
+      userInfo,
     },
   });
 });
-
-const changePassword = catchAsync(async (req, res) => {
-  const { ...passwordData } = req.body;
-
-  const result = await AuthServices.changePassword(req.user, passwordData);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Password is updated succesfully!',
-    data: result,
-  });
-});
-
-const refreshToken = catchAsync(async (req, res) => {
-  const { refreshToken } = req.cookies;
-  const result = await AuthServices.refreshToken(refreshToken);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Access token is retrieved succesfully!',
-    data: result,
-  });
-});
-
-export const AuthControllers = {
-  loginUser,
-  changePassword,
-  refreshToken,
-};
