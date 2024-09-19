@@ -28,21 +28,18 @@ export const loginUser = catchAsync(async (req, res) => {
     email: userInfo.email,
     role: userInfo.role,
   };
-
-  // Create the access token (short-lived)
-  const accessToken = createToken(
+  const accessToken = `Bearer ${createToken(
     tokenData,
     config.jwt_access_secret as string,
     config.expire_in_access as string // e.g., '15m'
-  );
+  )}`;
 
   // Create the refresh token (long-lived)
-  const refreshToken = createToken(
+  const refreshToken = `Bearer ${createToken(
     tokenData,
     config.jwt_refresh_secret as string, // Use a different secret for the refresh token
     config.expire_in_refresh as string // e.g., '7d'
-  );
-
+  )}`;
   // Set the refresh token in an HTTP-only cookie
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,

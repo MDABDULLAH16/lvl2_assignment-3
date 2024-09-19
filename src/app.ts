@@ -4,7 +4,10 @@ import router from './app/routes';
 
 import notFound from './app/middlewares/notFound';
 import globalErrorHandler from './app/middlewares/globalErrorhandler';
+import cookieParser from 'cookie-parser';
 const app: Application = express();
+// Use cookie-parser middleware
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(cors());

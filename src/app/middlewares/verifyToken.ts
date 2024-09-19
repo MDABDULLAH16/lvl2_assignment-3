@@ -4,20 +4,29 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../errors/AppError';
 import { createToken } from '../Auth/auth.utils';
-// Assumes you have a function to create JWT tokens
 
-// Middleware to verify access token and refresh token
 export const verifyToken = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // Get access token from cookies
-    const accessToken = req.cookies.accessToken;
-    if (!accessToken) {
-      throw new AppError(401, 'Access token is missing');
+    // Get the Authorization header
+    const authHeader = req.headers.authorization;
+
+    // Log the Authorization header to see what's coming in
+    console.log('Auth Header:', authHeader);
+
+    // Check if the Authorization header is present and starts with 'Bearer '
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new AppError(401, 'Access token is missing or malformed');
     }
+
+    // Extract the token by removing the 'Bearer ' prefix
+    const accessToken = authHeader.split(' ')[1];
+
+    // Log the extracted access token
+    console.log('Access Token:', accessToken);
 
     // Verify the access token
     jwt.verify(
@@ -26,7 +35,7 @@ export const verifyToken = (
       (err: any, decoded: any) => {
         if (err) {
           if (err.name === 'TokenExpiredError') {
-            // Access token expired, check refresh token
+            // Access token expired, check refresh token from cookies
             const refreshToken = req.cookies.refreshToken;
             if (!refreshToken) {
               throw new AppError(401, 'Refresh token is missing');
@@ -52,7 +61,7 @@ export const verifyToken = (
                 );
 
                 // Set the new access token in the cookie
-                res.cookie('accessToken', newAccessToken, {
+                res.cookie('accessToken', `Bearer ${newAccessToken}`, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === 'production',
                   maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds

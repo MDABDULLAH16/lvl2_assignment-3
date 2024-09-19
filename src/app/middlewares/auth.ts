@@ -10,7 +10,13 @@ import { userServices } from '../modules/user/user.service';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        message: 'Token not found',
+      });
+    }
 
     // checking if the token is missing
     if (!token) {
@@ -31,30 +37,6 @@ const auth = (...requiredRoles: TUserRole[]) => {
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
     }
-    // checking if the user is already deleted
-
-    // const isDeleted = user?.isDeleted;
-
-    // if (isDeleted) {
-    //   throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
-    // }
-
-    // checking if the user is blocked
-    // const userStatus = user?.status;
-
-    // if (userStatus === 'blocked') {
-    //   throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
-    // }
-
-    // if (
-    //   user.passwordChangedAt &&
-    //   User.isJWTIssuedBeforePasswordChanged(
-    //     user.passwordChangedAt,
-    //     iat as number
-    //   )
-    // ) {
-    //   throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
-    // }
 
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(
