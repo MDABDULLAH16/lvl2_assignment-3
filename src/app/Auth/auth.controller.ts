@@ -62,7 +62,8 @@ export const loginUser = catchAsync(async (req, res) => {
     success: true,
     message: 'User logged in successfully',
     data: {
-      accessToken, // Optionally send the access token to the client
+      accessToken,
+      refreshToken, // Optionally send the access token to the client
       userInfo,
     },
   });
