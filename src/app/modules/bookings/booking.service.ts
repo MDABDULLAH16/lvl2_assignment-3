@@ -5,8 +5,6 @@ import { TBooking } from './booking.interface';
 import { Booking } from './booking.model';
 
 const createBooking = async (userEmail: string, bookingDetails: TBooking) => {
-  console.log('bookings', bookingDetails);
-
   const {
     serviceId,
     slotId,
@@ -19,10 +17,10 @@ const createBooking = async (userEmail: string, bookingDetails: TBooking) => {
 
   //   // Validate required fields
   if (!serviceId) {
-    throw new Error('ServiceId is requireds');
+    throw new Error('ServiceId is required');
   }
   if (!slotId) {
-    throw new Error('SlotId is requireds');
+    throw new Error('SlotId is required');
   }
 
   // Fetch service details
@@ -39,7 +37,6 @@ const createBooking = async (userEmail: string, bookingDetails: TBooking) => {
 
   // Fetch user by email
   const customer = await User.findOne({ email: userEmail });
-  console.log('cus', customer);
 
   if (!customer) {
     throw new Error('User not found');
@@ -68,6 +65,26 @@ const createBooking = async (userEmail: string, bookingDetails: TBooking) => {
   return booking;
 };
 
+const getAllBookings = async () => {
+  const result = await Booking.find();
+  return result;
+};
+
+const getBookingsByUser = async (userEmail: string) => {
+  const user = await User.findOne({ email: userEmail });
+  // Check if user exists
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const result = await Booking.findOne(
+    { customer: user._id },
+    { customer: 0, __v: 0 }
+  ).populate('service slot');
+  return result;
+};
+
 export const BookingServices = {
   createBooking,
+  getAllBookings,
+  getBookingsByUser,
 };

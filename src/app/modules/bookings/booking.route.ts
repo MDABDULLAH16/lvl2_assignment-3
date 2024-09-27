@@ -13,6 +13,17 @@ router.post(
   auth(USER_ROLE.user),
   BookingsController.createBooking
 );
-// router.get('/availability', slotController.getAvailableSlot2);
+router.get(
+  '/',
+
+  auth(USER_ROLE.admin),
+  BookingsController.getAllBookingsReq
+);
+router.get(
+  '/my-bookings',
+  //   authenticateUser,
+  auth(USER_ROLE.user),
+  BookingsController.getBookingsByUserReq
+);
 
 export const BookingsRoute = router;
