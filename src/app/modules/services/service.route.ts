@@ -6,6 +6,7 @@ import {
   validateCreateService,
   validateUpdateService,
 } from './service.validation';
+import { slotController } from '../slot/slot.controller';
 
 const router = express.Router();
 
@@ -28,6 +29,12 @@ router.delete(
 
   auth(USER_ROLE.admin),
   serviceController.deleteSingleServiceReq
+);
+router.post(
+  '/slots',
+
+  // auth(USER_ROLE.admin),
+  slotController.createSlotReq
 );
 
 export const ServiceRoute = router;
