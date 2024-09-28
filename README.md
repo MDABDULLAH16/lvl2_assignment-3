@@ -46,6 +46,7 @@ this is car washing company.If you want service from our company then you can bo
 1. Create a `.env` file in the root directory of the project.
 2. Add necessary configuration variables in the `.env` file.
    Example:
+   
    ```
 NODE_ENV=development
 PORT=5000
@@ -54,5 +55,4 @@ JWT_ACCESS_SECRET=99d2db6b3d8fa5f824b1ae71908655858672abcb1b99953607f271bf6ba1a9
 JWT_REFRESH_SECRET=2a3280515bc7387d7216401b428c91f4cbf8f8f44f7c7160a17ab163be9edf26
 JWT_ACCESS_EXPIRATION=1d
 JWT_REFRESH_EXPIRATION=7d
-
-   ```
+```
