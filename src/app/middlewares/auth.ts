@@ -14,7 +14,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     if (!token) {
       return res.status(404).json({
         success: false,
-        message: 'Token not found',
+        message: 'You are not authorized or token invalid',
       });
     }
 

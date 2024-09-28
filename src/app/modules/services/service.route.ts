@@ -33,7 +33,7 @@ router.delete(
 router.post(
   '/slots',
 
-  // auth(USER_ROLE.admin),
+  auth(USER_ROLE.admin),
   slotController.createSlotReq
 );
 

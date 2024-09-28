@@ -65,7 +65,6 @@ const getAllSlot = async () => {
 };
 const findAvailableSlots2 = async (serviceId: string, date?: string) => {
   const query: any = {};
-  console.log(query);
 
   // Add serviceId filter if provided
   if (serviceId) {
@@ -82,7 +81,6 @@ const findAvailableSlots2 = async (serviceId: string, date?: string) => {
 
   // Perform the database query to find the available slots
   const availableSlots = await Slot.find(query).populate('service');
-  console.log('sl', availableSlots);
 
   return availableSlots;
 };
