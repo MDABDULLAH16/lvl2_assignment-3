@@ -28,7 +28,7 @@ export const loginUser = catchAsync(async (req, res) => {
     email: userInfo.email,
     role: userInfo.role,
   };
-  const accessToken = `${createToken(
+  const token = `${createToken(
     tokenData,
     config.jwt_access_secret as string,
     config.expire_in_access as string // e.g., '15m'
@@ -49,7 +49,7 @@ export const loginUser = catchAsync(async (req, res) => {
   });
 
   // Set the access token in an HTTP-only cookie
-  res.cookie('accessToken', accessToken, {
+  res.cookie('accessToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
     maxAge: 15 * 60 * 1000, // 15 minutes
@@ -61,11 +61,8 @@ export const loginUser = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User logged in successfully',
-    data: {
-      accessToken,
-      // refreshToken, // Optionally send the access token to the client
-      userInfo,
-    },
+    token,
+    data: userInfo,
   });
 });
 export const refreshToken = catchAsync(async (req, res) => {
